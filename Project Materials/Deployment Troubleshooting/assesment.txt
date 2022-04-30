@@ -1,0 +1,31 @@
+I used the following commands to help diagnose the issue:
+
+    kubectl get pods --all-namespaces (to get the pod name)
+    kubectl describe pod <pod name>
+    kubectl logs <pod name>
+
+As shown in my "troubleshooting" screenshots, I saw that the pod seemed to be restarting more than it should. I determined this by:
+    1. Noticing the amount of restarts (there are 5 in this scenario; some deployments would go to 17+ restarts, depending on how long I left it up)
+    2. Finding the "CrashLoopBackOff" reason for error in the "describe pod" command.
+    3. Seeing the events in the "describe pod" command and noticing the "liveness probe failed" message followed by the "failed liveness probe, will be restarted" message
+
+After researching on Google, I found the "CrashLoopBackOff" state means that the pod is in a restarting loop and kubelet has noticed this.
+
+Ultimately, I was able to solve the issue after researching "liveness" on the kubernetes documentation website.
+https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+The issue here was this code in hello.yml:
+livenessProbe:
+            httpGet:
+              port: 9000
+              path: /nginx_status  <--- Path should have been /healthz
+            initialDelaySeconds: 2
+            periodSeconds: 2
+
+Though I don't completely understand what's going on behind the scenes, it seems that "liveness" assists in the pod's ability to know when to restart in case of a failure.
+The original yaml was pointing the liveness probe to a path that was not returning the correct reading on the container's liveness. It should have been "/healthz".
+This makes sense, as the logs from /nginx_status say to ping the path /healthz.
+Every time the probe returned a bad reading, kubelet assumed that the pod needed to restart to fix the issue. But the path for liveness was bad, so the probe kept returning an inaccurate reading.
+And so, the pod kept restarting as a result of always reading a bad liveness check.
+After redeploying the yaml with the correct path, the liveness check returned the correct reading and it was healthy. Because it was healthy, kubelet knew it didn't need to restart the pod.
+After 35min, the pod has not restarted, and continues to return "healthy" readings in its logs.

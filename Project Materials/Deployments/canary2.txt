@@ -1,0 +1,9 @@
+NAME                           READY   STATUS    RESTARTS   AGE
+blue-8475cbdf46-p8rnw          1/1     Running   0          3h21m
+blue-8475cbdf46-rlbzh          1/1     Running   0          3h21m
+blue-8475cbdf46-vn2j4          1/1     Running   0          3h21m
+canary-v2-5dc9c56687-cdgsv     1/1     Running   0          78s
+canary-v2-5dc9c56687-cz6tz     1/1     Running   0          103s
+canary-v2-5dc9c56687-nlpzf     1/1     Running   0          103s
+canary-v2-5dc9c56687-vgzgt     1/1     Running   0          17m
+hello-world-794458d64d-9c4q7   1/1     Running   0          102m

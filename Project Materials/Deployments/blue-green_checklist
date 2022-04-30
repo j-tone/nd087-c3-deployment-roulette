@@ -1,0 +1,8 @@
+1. blue-green.sh.
+2. index already replaced with green values
+3. blue-green.sh
+4. Code mimicked and added in kubernetes_resources.tf and dns.tf
+5. curl gets both green and blue
+6. destroyed blue
+7. ec2 only returns green now
+
